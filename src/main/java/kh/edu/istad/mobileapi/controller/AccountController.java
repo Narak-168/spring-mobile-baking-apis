@@ -6,12 +6,14 @@ import kh.edu.istad.mobileapi.dto.CreateAccountRequest;
 import kh.edu.istad.mobileapi.dto.UpdateAccountRequest;
 import kh.edu.istad.mobileapi.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RestController
 @RequestMapping("/api/v1/accounts")
@@ -22,6 +24,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public AccountResponse createAccount(@Valid @RequestBody CreateAccountRequest createAccountRequest) {
+        log.info("Creating account {}", createAccountRequest);
         return accountService.createAccount(createAccountRequest);
     }
 
@@ -52,7 +55,7 @@ public class AccountController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PatchMapping("/{actNo}/disable")
+    @PatchMapping("/disable/{actNo}")
     public void disableAccount(@PathVariable String actNo) {
         accountService.disableByActNo(actNo);
     }

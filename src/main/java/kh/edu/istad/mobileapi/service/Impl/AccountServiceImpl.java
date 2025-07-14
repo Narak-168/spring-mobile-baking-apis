@@ -47,15 +47,16 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = accountMapper.toAccount(createAccountRequest);
         account.setActType(savingsType);
+        account.setAccountCurrency(createAccountRequest.actCurrency());
         account.setIsDeleted(false);
         account.setBalance(Double.valueOf(0));
         account.setReceiverTransactions(new ArrayList<>());
         account.setSenderTransactions(new ArrayList<>());
         account.setCustomer(customer);
 
-        accountRepository.save(account);
+        Account account1 =  accountRepository.save(account);
 
-        return accountMapper.fromAccount(account);
+        return accountMapper.fromAccount(account1);
     }
 
     @Override
@@ -78,10 +79,9 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse getAccountsByCustomer(String phone) {
         Customer customer = customerRepository.findByPhone(phone)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer is not found with phone number"));
-        AccountResponse accounts = accountRepository.findAccountByCustomer(customer)
+        return accountRepository.findAccountByCustomer(customer)
                 .map(accountMapper::fromAccount)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account is not found"));
-        return accounts;
     }
 
     @Override

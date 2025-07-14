@@ -20,7 +20,7 @@ public class Account {
     private Integer id;
 
     @Column(unique=true, nullable = false, length = 32)
-    private Integer accountNumber;
+    private String actNo;
 
     @ManyToOne
     @JoinColumn(name = "actType_id")
