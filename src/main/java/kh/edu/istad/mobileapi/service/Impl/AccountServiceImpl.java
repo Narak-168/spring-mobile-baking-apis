@@ -47,7 +47,6 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = accountMapper.toAccount(createAccountRequest);
         account.setActType(savingsType);
-        account.setAccountCurrency(createAccountRequest.actCurrency());
         account.setIsDeleted(false);
         account.setBalance(Double.valueOf(0));
         account.setReceiverTransactions(new ArrayList<>());

@@ -27,7 +27,7 @@ public class Account {
     private AccountType actType;
 
     @Column(nullable=false)
-    private String accountCurrency;
+    private String actCurrency;
 
     @Column(nullable = false)
     private Double balance;
