@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class CustomerServiceImplement implements CustomerService {
     @Override
     public CustomerResponse findByPhone(String phone) {
         return customerRepository
-                .findByPhone(phone)
+                .findByPhoneAndIsDeletedFalse(phone)
                 .map(customerMapper::fromCustomer)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer's phone number not found"));
     }
@@ -87,5 +88,14 @@ public class CustomerServiceImplement implements CustomerService {
                 .findByPhone(phone)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer's phone number not found"));
         customerRepository.delete(customer);
+    }
+
+    @Transactional
+    @Override
+    public void disableByPhone(String phone) {
+        if (!customerRepository.isExistsByPhone(phone)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer's phone number not found");
+        }
+        customerRepository.disableByPhone(phone);
     }
 }

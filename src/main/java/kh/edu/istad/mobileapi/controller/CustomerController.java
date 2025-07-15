@@ -45,4 +45,11 @@ public class CustomerController {
     void deleteByPhone(@PathVariable String phone) {
         customerService.deleteByPhone(phone);
     }
+
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/{phone}")
+    public void disableByPhone(@PathVariable String phone){
+        customerService.disableByPhone(phone);
+    }
 }

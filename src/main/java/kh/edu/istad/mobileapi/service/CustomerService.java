@@ -13,4 +13,5 @@ List<CustomerResponse> findAllCustomers();
 CustomerResponse findByPhone(String phone);
 CustomerResponse updateByPhone(String phone, UpdateCustomerRequest updateCustomerRequest);
 void deleteByPhone(String phone);
+void disableByPhone(String phone);
 }
