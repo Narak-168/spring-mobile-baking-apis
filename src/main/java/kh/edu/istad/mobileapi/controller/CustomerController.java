@@ -52,4 +52,11 @@ public class CustomerController {
     public void disableByPhone(@PathVariable String phone){
         customerService.disableByPhone(phone);
     }
+
+    //homework-V2
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/verify/{nationalCardId}")
+    public void verifyKYCByNationalCardId(@PathVariable String nationalCardId) {
+        customerService.verifyByKYCNationalCardID(nationalCardId);
+    }
 }

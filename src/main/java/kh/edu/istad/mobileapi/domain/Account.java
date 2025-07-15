@@ -35,6 +35,9 @@ public class Account {
     @Column(nullable = false)
     private Boolean isDeleted;
 
+    @Column(nullable = false)
+    private Double overLimit;
+
     @ManyToOne
     @JoinColumn(name = "custom_id") //Change the name from customer_id --> custom_id
     private  Customer customer;

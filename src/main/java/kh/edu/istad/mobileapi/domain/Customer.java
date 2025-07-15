@@ -40,12 +40,20 @@ public class Customer {
     @Column(nullable = false)
     private Boolean isDeleted;
 
+    //New field added/homework-V2
+    @Column(nullable = false,unique = true)
+    private String nationalCardID;
+
     @OneToMany(mappedBy = "customer")
     private List<Account> accounts;
 
 
-    @OneToOne
-    @JoinColumn(unique = true)
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @PrimaryKeyJoinColumn
     private KYC kyc;
+
+    @ManyToOne
+    @JoinColumn(name = "segment_id")
+    private Segment segment;
 
 }

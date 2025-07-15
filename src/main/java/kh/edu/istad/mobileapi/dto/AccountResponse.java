@@ -4,6 +4,7 @@ public record AccountResponse(
         String actType,
         String actCurrency,
         Double balance,
-        Boolean isDeleted
+        Boolean isDeleted,
+        Double overLimit
 ) {
 }

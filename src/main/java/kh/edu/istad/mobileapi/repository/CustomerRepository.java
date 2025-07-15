@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,4 +33,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
                     WHERE c.phone = ?1)
 """)
     boolean isExistsByPhone(String phone);
+
+    List<Customer> phone(String phone);
 }

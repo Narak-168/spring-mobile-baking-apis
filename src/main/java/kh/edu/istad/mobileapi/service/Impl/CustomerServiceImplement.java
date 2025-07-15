@@ -1,11 +1,15 @@
 package kh.edu.istad.mobileapi.service.Impl;
 
 import kh.edu.istad.mobileapi.domain.Customer;
+import kh.edu.istad.mobileapi.domain.KYC;
+import kh.edu.istad.mobileapi.domain.Segment;
 import kh.edu.istad.mobileapi.dto.CreateCustomerRequest;
 import kh.edu.istad.mobileapi.dto.CustomerResponse;
 import kh.edu.istad.mobileapi.dto.UpdateCustomerRequest;
 import kh.edu.istad.mobileapi.mapper.CustomerMapper;
 import kh.edu.istad.mobileapi.repository.CustomerRepository;
+import kh.edu.istad.mobileapi.repository.KYCRepository;
+import kh.edu.istad.mobileapi.repository.SegmentRepository;
 import kh.edu.istad.mobileapi.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +29,8 @@ public class CustomerServiceImplement implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final KYCRepository kYCRepository;
+    private final SegmentRepository segmentRepository;
 
     @Override
     public CustomerResponse createCustomer(CreateCustomerRequest createCustomerRequest) {
@@ -36,20 +42,37 @@ public class CustomerServiceImplement implements CustomerService {
         if(customerRepository.existsByPhone(createCustomerRequest.phone())){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number already exists");
         }
+        if(kYCRepository.existsByNationalCardId(createCustomerRequest.nationalCardID())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "National card already exists");
+        }
 
+
+        // Find segment
+        Segment segment = segmentRepository.getSegmentByName(createCustomerRequest.segmentName())
+                .orElseThrow(() -> new RuntimeException("Segment not found"));
 
         Customer customer = customerMapper.toCustomer(createCustomerRequest);
-        customer.setAccounts(new ArrayList<>());
         customer.setIsDeleted(false);
+        customer.setAccounts(new ArrayList<>());
+        customer.setSegment(segment);
 
+        Customer savedCustomer = customerRepository.save(customer);
+
+        KYC kyc = new KYC();
+        kyc.setNationalCardId(createCustomerRequest.nationalCardID());
+
+        kyc.setCustomer(savedCustomer);
+        kYCRepository.save(kyc);
+
+        savedCustomer.setKyc(kyc);
 
         log.info("Creating Customer getID before save: " + customer.getId());
 
-        customerRepository.save(customer);
+        customerRepository.save(savedCustomer);
 
         log.info("Created Customer getID after save : {}", customer.getId());
 
-        return customerMapper.fromCustomer(customer);
+        return customerMapper.fromCustomer(savedCustomer);
     }
 
     @Override
@@ -98,4 +121,17 @@ public class CustomerServiceImplement implements CustomerService {
         }
         customerRepository.disableByPhone(phone);
     }
+
+    //homework-V2
+    @Override
+    public void verifyByKYCNationalCardID(String nationalCardID) {
+        if (!kYCRepository.existsByNationalCardId(nationalCardID)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "National Card ID number not found");
+        }
+        KYC kyc = kYCRepository.findByNationalCardId(nationalCardID)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "KYC's card number not found"));
+        kyc.setIsVerified(true);
+        kYCRepository.save(kyc);
+    }
+
 }
